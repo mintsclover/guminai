@@ -1,0 +1,9 @@
+Flask
+PyYAML
+python-dotenv
+requests
+faiss-cpu
+langchain
+huggingface-hub
+transformers
+numpy
