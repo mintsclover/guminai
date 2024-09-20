@@ -491,12 +491,20 @@ th {
 
 .chat-logo {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
 }
 
+.chat-logo p {
+    color: #888;
+}
+
 .chat-logo img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     max-width: 15%;
     height: auto;
     opacity: 0.3; /* 로고의 투명도 조절 */
