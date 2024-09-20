@@ -42,12 +42,25 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     sendButton.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        chatInput.addEventListener('keydown', function (e) {
+            // 모바일에서는 Enter 키가 줄바꿈
+            if (e.key === 'Enter' && !e.shiftKey) {
+                // 기본 동작 허용 (줄바꿈)
+            }
+        });
+    } else {
+        chatInput.addEventListener('keydown', function (e) {
+            // 데스크탑에서는 Enter 키로 전송
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
 
     chatInput.addEventListener('input', function () {
         // 입력란의 높이를 자동으로 조절
@@ -55,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         chatInput.style.height = chatInput.scrollHeight + 'px';
     });
 
+    
     const exampleQuestions = document.querySelectorAll('.example-question');
 
     exampleQuestions.forEach(function (button) {
@@ -84,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 모델 선택 드롭다운 비활성화
         modelSelect.disabled = true;
+        sendButton.disabled = true;
+        sendButton.classList.add('disabled'); // 비활성화 클래스 추가
+        //sendButton.querySelector('img').src = '/static/images/send_icon_disabled.png';
 
         fetch('/chat_api', {
             method: 'POST',
@@ -98,8 +115,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             hideTypingIndicator();
-            // 모델 선택 드롭다운 다시 활성화
+            // 모델 선택 드롭다운 및 전송 버튼 다시 활성화
             modelSelect.disabled = false;
+            sendButton.disabled = false;
+            sendButton.classList.remove('disabled'); // 비활성화 클래스 제거
+            //sendButton.querySelector('img').src = '/static/images/send_icon.png';
             if (data.answer) {
                 addMessage('bot', data.answer);
             } else {
@@ -111,11 +131,23 @@ document.addEventListener('DOMContentLoaded', function () {
             hideTypingIndicator();
             // 모델 선택 드롭다운 다시 활성화
             modelSelect.disabled = false;
+            sendButton.disabled = false;
+            sendButton.classList.remove('disabled');
+            //sendButton.querySelector('img').src = '/static/images/send_icon.png';
             addMessage('bot', '죄송합니다. 오류가 발생했습니다.');
         });
     }
 
     function addMessage(sender, text) {
+        if (sender === 'system') {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('system-message');
+            messageElement.textContent = text;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return;
+        }
+
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
 
@@ -189,3 +221,33 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+const toggleButton = document.getElementById('toggle-questions');
+const questionsContainer = document.getElementById('questions-container');
+
+toggleButton.addEventListener('click', function () {
+    if (questionsContainer.style.display === 'none') {
+        questionsContainer.style.display = 'flex';
+        toggleButton.textContent = '접기 ▲';
+    } else {
+        questionsContainer.style.display = 'none';
+        toggleButton.textContent = '펼치기 ▼';
+    }
+});
+
+const menuButton = document.getElementById('menu-button');
+const sideMenu = document.getElementById('side-menu');
+const overlay = document.createElement('div');
+overlay.id = 'overlay';
+document.body.appendChild(overlay);
+
+menuButton.addEventListener('click', function () {
+    sideMenu.classList.add('open');
+    overlay.classList.add('show');
+});
+
+overlay.addEventListener('click', function () {
+    sideMenu.classList.remove('open');
+    overlay.classList.remove('show');
+});
+

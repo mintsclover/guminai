@@ -1,28 +1,8 @@
-# config.yaml
-
-# 전체 컨텍스트의 최대 길이 설정 (토큰 수 또는 문자 수 기준)
-max_total_length: 2500  # 기본값: 1500
-
-# 유사도 검색 시 가져올 상위 문서의 개수
-top_k: 3  # 기본값: 5
-
-# 유사도 점수의 영향력을 조절하는 alpha 값
-alpha: 10.0  # 값이 클수록 상위 문서에 더 많은 길이가 할당됩니다
-
-# 벡터 스토어 파일 경로 (인덱스 파일)
-vector_store_path: "vector_store.index"  # 기본값: "vector_store.index"
-
-# 문서 파일이 저장된 폴더 경로 (상대 또는 절대 경로)
-folder_path: "wiki"  # 기본값: 현재 디렉토리의 'wiki' 폴더
-
-# 벡터 스토어를 생성할 때 사용할 파일 목록
-# 폴더 내의 모든 .md 파일을 사용하려면 이 값을 null 또는 []로 설정
-files: null  # 예시: ["doc1.md", "doc2.md"] 또는 null
-
-# 임베딩 모델 이름
-embedding_model_name: "jhgan/ko-sroberta-multitask"  # 기본값: "jhgan/ko-sroberta-multitask"
-
-# 로그 레벨 설정 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-log_level: "INFO"  # 기본값: "INFO"
-
-# 추가로 필요한 설정값이 있다면 아래에 추가할 수 있습니다
+alpha: 10.0
+embedding_model_name: jhgan/ko-sroberta-multitask
+files: None
+folder_path: wiki
+log_level: INFO
+max_total_length: 2000
+top_k: 3
+vector_store_path: vector_store.index

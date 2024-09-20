@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>수민국 AI 챗봇</title>
+    <title>주미니</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 디자인을 위한 뷰포트 설정 -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- 파비콘 설정 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  <!-- CSS 파일 연결 -->
@@ -11,19 +11,35 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h2>수민국 AI 챗봇</h2>
+            <h2>주미니</h2>
+            <button id="menu-button">
+                <img src="{{ url_for('static', filename='images/menu_icon.png') }}" alt="Menu">
+            </button>
             <select id="model-select">
                 <option value="model1">성내구민</option>
                 <option value="model2">성동구민</option>
             </select>
         </div>
+        <!-- 사이드 메뉴 -->
+        <div id="side-menu" class="side-menu">
+            <div class="side-menu-content">
+                <p>저작권 정보</p>
+                <a href="https://github.com/your-repo">
+                    <img src="{{ url_for('static', filename='images/github_icon.png') }}" alt="GitHub">
+                </a>
+                <!-- 기타 내용 -->
+            </div>
+        </div>
         <!-- 모델 소개 박스 -->
         <div class="model-intro" id="model-intro"></div>
         <!-- 질문 예시 박스 -->
-        <div class="example-questions">
-            {% for question in example_questions %}
-                <button class="example-question">{{ question }}</button>
-            {% endfor %}
+        <div class="example-questions" id="example-questions">
+            <button id="toggle-questions">접기 ▲</button>
+            <div id="questions-container">
+                {% for question in example_questions %}
+                    <button class="example-question">{{ question }}</button>
+                {% endfor %}
+            </div>
         </div>
         <div class="chat-messages" id="chat-messages">
             <!-- 메시지가 추가되는 영역 -->
