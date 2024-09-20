@@ -115,7 +115,7 @@ class VectorStoreManager:
             index=index,
             docstore=docstore,
             index_to_docstore_id=index_to_docstore_id,
-            embedding_function=self.get_embedding
+            embedding_function=self.embedding_function
         )
 
     # 문서 전처리: 특수 기호 제거 및 내용 정제
@@ -258,7 +258,7 @@ class VectorStoreManager:
             index=index,
             docstore={str(i): docs[i] for i in range(len(docs))},
             index_to_docstore_id={i: str(i) for i in range(len(docs))},
-            embedding_function=self.embedding_function.embed_query
+            embedding_function=self.embedding_function
         )
 
     # 벡터 스토어 가져오기 함수
