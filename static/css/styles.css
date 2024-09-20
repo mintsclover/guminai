@@ -82,12 +82,16 @@ body {
     padding: 10px;
     color: white;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     position: relative;
 }
 
 .chat-header h2 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
     margin: 0;
 }
 
@@ -243,6 +247,7 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+    margin-right: auto; /* Align to the left */
 }
 
 #menu-button img {
@@ -452,3 +457,12 @@ th {
     background-color: #2e8b57;
 }
 
+
+.menu-icon {
+    filter: invert(100%);
+}
+
+.github-icon {
+    width: 50px;  /* 원하는 너비로 설정 */
+    height: auto; /* 높이는 자동으로 설정하여 비율 유지 */
+}

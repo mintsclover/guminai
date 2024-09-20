@@ -16,6 +16,7 @@ from langchain.schema import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 import sqlite3
 from datetime import datetime
+from collections import deque
 
 # 환경 변수 및 설정 파일 로드
 load_dotenv()
@@ -398,26 +399,44 @@ def chat_api():
     selected_model = data.get('model', 'model1')
     model_preset = model_presets.get(selected_model, model_presets['model1'])
 
-    # 벡터 스토어 및 클로바 설정
-    vector_store_manager = VectorStoreManager()
-    vector_store_manager.get_vector_store()
+    # 대화 내역 초기화 또는 가져오기
+    if 'conversation_history' not in session:
+        session['conversation_history'] = []
+    conversation_history = session['conversation_history']
+
+    # 사용자의 메시지 추가
+    conversation_history.append({'role': 'user', 'content': question})
+
+    # 대화 내역이 20개(10회 대화)를 초과하면 초기화
+    if len(conversation_history) > 4:
+        conversation_history = []
+        session['conversation_history'] = conversation_history
+        # 기억력 초기화 메시지 반환
+        return jsonify({'answer': '기억력이 초기화되었습니다!', 'reset': True})
+
+    # 프롬프트 메시지 생성
+    messages = model_preset['preset_text'] + conversation_history
+
+    # 답변 생성
     completion_executor = CompletionExecutor(
         host=CLOVA_HOST,
         api_key=CLOVA_API_KEY,
         api_key_primary_val=CLOVA_PRIMARY_KEY,
         request_id=CLOVA_REQUEST_ID
     )
+    request_data = model_preset['request_data']
+    request_data['messages'] = messages
 
-    # 컨텍스트 생성 로직
-    context = generate_context(question, vector_store_manager)
+    response = completion_executor.execute(request_data)
 
-    # 답변 생성
-    answer = ask_clova(question, context, completion_executor, model_preset)
+    # 봇의 응답 추가
+    conversation_history.append({'role': 'assistant', 'content': response})
+    session['conversation_history'] = conversation_history
 
-    # 대화 내용 저장
-    save_chat_history(question, answer)
+    # 채팅 기록 저장
+    save_chat_history(question, response)
 
-    return jsonify({'answer': answer})
+    return jsonify({'answer': response})
 
 @app.route('/get_example_questions')
 def get_example_questions():

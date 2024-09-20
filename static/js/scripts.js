@@ -166,14 +166,17 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         })
         .then(response => response.json())
+        // 서버 응답 처리 부분 수정
         .then(data => {
             hideTypingIndicator();
             // 모델 선택 드롭다운 및 전송 버튼 다시 활성화
             modelSelect.disabled = false;
             sendButton.disabled = false;
-            sendButton.classList.remove('disabled'); // 비활성화 클래스 제거
-            //sendButton.querySelector('img').src = '/static/images/send_icon.png';
-            if (data.answer) {
+            sendButton.classList.remove('disabled');
+
+            if (data.reset) {
+                addMessage('system', data.answer); // 시스템 메시지로 표시
+            } else if (data.answer) {
                 addMessage('bot', data.answer);
             } else {
                 addMessage('bot', '죄송합니다. 응답을 가져올 수 없습니다.');
