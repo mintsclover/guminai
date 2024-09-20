@@ -6,6 +6,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const modelSelect = document.getElementById('model-select');
     const modelIntro = document.getElementById('model-intro');
 
+    // 기본값 HTML 설정
+    const defaultChatLogoHTML = `
+    <div class="chat-logo" id="chat-logo">
+        <img src="/static/images/favicon.png" alt="GuminAI 로고">
+        <p>안녕하세요! 구미나이입니다. 무엇을 도와드릴까요?</p>
+    </div>
+    `;
+    chatMessages.innerHTML = defaultChatLogoHTML;
+
     // 봇 아바타 이미지 소스 변수 추가
     let botAvatarSrc = '/static/images/bot_avatar.png';
     updateBotAvatar();
@@ -16,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selectedModel === 'model1') {
             modelIntro.textContent = '환영합니다! 기억 기능이 업데이트 되었습니다!';
         } else if (selectedModel === 'model2') {
+            modelIntro.textContent = '환영합니다! 기억 기능이 업데이트 되었습니다!';
+        } else {
             modelIntro.textContent = '환영합니다! 기억 기능이 업데이트 되었습니다!';
         }
         // 모델에 따라 봇 아바타 이미지 변경
@@ -29,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
             botAvatarSrc = '/static/images/bot_avatar_model1.png';
         } else if (selectedModel === 'model2') {
             botAvatarSrc = '/static/images/bot_avatar_model2.png';
+        } else if (selectedModel === 'model3') {
+            botAvatarSrc = '/static/images/bot_avatar_model3.png';
         } else {
             botAvatarSrc = '/static/images/bot_avatar.png'; // 기본 아바타
         }
@@ -47,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }).then(() => {
             // 채팅 창 초기화
-            chatMessages.innerHTML = '';
+            chatMessages.innerHTML = defaultChatLogoHTML;
             // 예시 질문 창 펼치기
             if (questionsContainer.classList.contains('collapsed')) {
                 toggleQuestions();
