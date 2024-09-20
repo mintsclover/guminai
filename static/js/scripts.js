@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         chatInput.style.height = chatInput.scrollHeight + 'px';
     });
 
-    
+    //예사 질문 박스
     const exampleQuestions = document.querySelectorAll('.example-question');
 
     exampleQuestions.forEach(function (button) {
@@ -79,20 +79,43 @@ document.addEventListener('DOMContentLoaded', function () {
             sendMessage();
         });
     });
-
+    function refreshExampleQuestions() {
+        fetch('/get_example_questions')
+            .then(response => response.json())
+            .then(data => {
+                const questionsContainer = document.getElementById('questions-container');
+                questionsContainer.innerHTML = '';
+                data.example_questions.forEach(question => {
+                    const button = document.createElement('button');
+                    button.classList.add('example-question');
+                    button.textContent = question;
+                    button.addEventListener('click', function () {
+                        chatInput.value = question;
+                        chatInput.style.height = 'auto';
+                        sendMessage();
+                        refreshExampleQuestions(); // Refresh after sending a message
+                    });
+                    questionsContainer.appendChild(button);
+                });
+            });
+    }
+    
+    // Call refreshExampleQuestions initially
+    refreshExampleQuestions();
 
     const toggleButton = document.getElementById('toggle-questions');
     const questionsContainer = document.getElementById('questions-container');
+    toggleButton.classList.add('open');
 
     toggleButton.addEventListener('click', function () {
         if (questionsContainer.style.display === 'none') {
             questionsContainer.style.display = 'flex';
-            toggleButton.textContent = '접기 ▲';
+            toggleButton.classList.add('open');
         } else {
             questionsContainer.style.display = 'none';
-            toggleButton.textContent = '펼치기 ▼';
+            toggleButton.classList.remove('open');
         }
-    });
+    });    
 
     const menuButton = document.getElementById('menu-button');
     const sideMenu = document.getElementById('side-menu');

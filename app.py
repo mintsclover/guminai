@@ -419,6 +419,12 @@ def chat_api():
 
     return jsonify({'answer': answer})
 
+@app.route('/get_example_questions')
+def get_example_questions():
+    num_questions = 3  # Number of questions to return
+    example_questions = random.sample(all_example_questions, num_questions)
+    return jsonify({'example_questions': example_questions})
+
 # 관리자 페이지
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
