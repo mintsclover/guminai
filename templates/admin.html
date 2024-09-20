@@ -1,0 +1,37 @@
+<!-- templates/admin.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% if not session.admin_authenticated %}
+    <div class="login-container">
+        <h2>관리자 비밀번호를 입력하세요</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            <input type="password" name="password" placeholder="비밀번호">
+            <button type="submit">로그인</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="admin-container">
+        <h2>설정 변경</h2>
+        {% if success %}
+            <p class="success">{{ success }}</p>
+        {% endif %}
+        <form method="post">
+            {% for key, value in config.items() %}
+                <label>{{ key }}</label>
+                <input type="text" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+            <button type="submit">업데이트</button>
+        </form>
+    </div>
+    {% endif %}
+</body>
+</html>

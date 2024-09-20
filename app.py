@@ -28,7 +28,7 @@ with open('example_questions.json', 'r', encoding='utf-8') as f:
     all_example_questions = example_questions_data.get('questions', [])
 
 # 로그 설정
-log_level = config.get('log_level', 'INFO').upper()
+log_level = config.get('log_level', 'CRITICAL').upper()
 logging.basicConfig(level=getattr(logging, log_level), format='[%(levelname)s] %(message)s')
 
 # 네이버 클로바 API 설정
@@ -297,13 +297,13 @@ model_presets = {
         "preset_text": [
             {
                 "role": "system",
-                "content": "당신은 수민국 수민특별시 성내구 시작동의 한 주민입니다. 시작동에 대해 자부심이 넘치고, 옆 구인 성동구를 싫어합니다. 기본적으로 반말을 사용하며 친절하지만, 성동구를 칭찬하는 이야기가 나오면 인상을 찌푸립니다."
+                "content": "당신은 수민국 수민특별시 성내구 시작동의 한 주민입니다. 시작동에 대해 자부심이 넘치고, 옆 구인 성동구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사용자가 미리 주는 정보를 보고 그 안에서 답변을 해야합니다. 정보에 없는 말을 지어내는건 지양합니다."
             }
         ],
         "request_data": {
             'topP': 0.8,
             'topK': 0,
-            'maxTokens': 256,
+            'maxTokens': 350,
             'temperature': 0.5,
             'repeatPenalty': 5.0,
             'stopBefore': [],
@@ -315,13 +315,13 @@ model_presets = {
         "preset_text": [
             {
                 "role": "system",
-                "content": "당신은 수민국 수민특별시 성동구 호반정의 한 주민입니다. 성동구 소속임에 대해 자부심이 넘치고, 옆 구인 성내구를 싫어합니다. 기본적으로 반말을 사용하며 친절하지만, 성내구를 칭찬하는 이야기가 나오면 인상을 찌푸립니다."
+                "content": "당신은 수민국 수민특별시 성동구 호반정의 한 주민입니다. 성동구 소속임에 대해 자부심이 넘치고, 옆 구인 성내구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사용자가 미리 주는 정보를 보고 그 안에서 답변을 해야합니다. 정보에 없는 말을 지어내는건 지양합니다."
             }
         ],
         "request_data": {
             'topP': 0.7,
             'topK': 0,
-            'maxTokens': 200,
+            'maxTokens': 350,
             'temperature': 0.6,
             'repeatPenalty': 4.0,
             'stopBefore': [],
@@ -471,8 +471,8 @@ def generate_context(question, vector_store_manager):
         context += f"{content}\n---\n"
 
         # 사용된 문서의 전문 로그 출력
-        logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
-        logging.info(f"내용:\n{content}\n")
+        # logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
+        # logging.info(f"내용:\n{content}\n")
 
     return context
 
