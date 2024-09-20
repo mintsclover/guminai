@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, g
 import os
 import json
 import pickle
@@ -23,6 +23,11 @@ load_dotenv()
 # 설정 파일 로드
 with open('config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.safe_load(f)
+
+# 문자열로 파싱되었을 경우 숫자로 변환
+config['alpha'] = float(config.get('alpha', 1.0))
+config['max_total_length'] = int(config.get('max_total_length', 1500))
+config['top_k'] = int(config.get('top_k', 5))
 
 # 예시 질문 로드
 with open('example_questions.json', 'r', encoding='utf-8') as f:
@@ -448,7 +453,6 @@ def chat_history():
     return render_template('chat_history.html', chat_logs=chat_logs)
 
 
-
 # 컨텍스트 생성 함수
 def generate_context(question, vector_store_manager):
     # 질문 임베딩
@@ -514,10 +518,32 @@ def generate_context(question, vector_store_manager):
         context += f"{content}\n---\n"
 
         # 사용된 문서의 전문 로그 출력
-        # logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
-        # logging.info(f"내용:\n{content}\n")
+        logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
+        logging.info(f"내용:\n{content}\n")
 
     return context
+
+def save_chat_history(user_message, bot_response):
+    db = get_db()
+    cursor = db.cursor()
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+        INSERT INTO chat_history (user_message, bot_response, timestamp)
+        VALUES (?, ?, ?)
+    ''', (user_message, bot_response, timestamp))
+    db.commit()
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect('chat_history.db')
+    return g.db
+
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
 
 def init_db():
     conn = sqlite3.connect('chat_history.db')
@@ -532,32 +558,6 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
-
-from datetime import datetime
-
-def save_chat_history(user_message, bot_response):
-    db = get_db()
-    cursor = db.cursor()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute('''
-        INSERT INTO chat_history (user_message, bot_response, timestamp)
-        VALUES (?, ?, ?)
-    ''', (user_message, bot_response, timestamp))
-    db.commit()
-
-from flask import g
-
-def get_db():
-    if 'db' not in g:
-        g.db = sqlite3.connect('chat_history.db')
-    return g.db
-
-@app.teardown_appcontext
-def close_db(error):
-    db = g.pop('db', None)
-
-    if db is not None:
-        db.close()
 
 if __name__ == '__main__':
     init_db()
