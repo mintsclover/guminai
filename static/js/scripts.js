@@ -39,7 +39,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     modelSelect.addEventListener('change', function() {
         updateModelIntro();
+        // 모델이 변경되면 세션의 대화 내역을 초기화하는 API 호출
+        fetch('/reset_conversation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            // 채팅 창 초기화
+            chatMessages.innerHTML = '';
+            // 예시 질문 창 펼치기
+            if (questionsContainer.classList.contains('collapsed')) {
+                toggleQuestions();
+            }
+        });
     });
+    
 
     sendButton.addEventListener('click', sendMessage);
     
@@ -107,15 +122,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const questionsContainer = document.getElementById('questions-container');
     toggleButton.classList.add('open');
 
-    toggleButton.addEventListener('click', function () {
-        if (questionsContainer.style.display === 'none') {
+    function toggleQuestions(){
+        if(questionsContainer.style.display === 'none'){
             questionsContainer.style.display = 'flex';
             toggleButton.classList.add('open');
-        } else {
+        }else{
             questionsContainer.style.display = 'none';
             toggleButton.classList.remove('open');
         }
-    });    
+    }
+
+    toggleButton.addEventListener('click', toggleQuestions);    
 
     const menuButton = document.getElementById('menu-button');
     const sideMenu = document.getElementById('side-menu');
@@ -126,12 +143,16 @@ document.addEventListener('DOMContentLoaded', function () {
     menuButton.addEventListener('click', function () {
         sideMenu.classList.add('open');
         overlay.classList.add('show');
+        // 오버레이 클릭 시 사이드 메뉴 닫기
+        overlay.addEventListener('click', closeSideMenu);
     });
-
-    overlay.addEventListener('click', function () {
+    
+    function closeSideMenu() {
         sideMenu.classList.remove('open');
         overlay.classList.remove('show');
-    });
+        // 이벤트 리스너 제거하여 메모리 누수 방지
+        overlay.removeEventListener('click', closeSideMenu);
+    }
 
     function sendMessage() {
         const message = chatInput.value.trim();
@@ -173,10 +194,11 @@ document.addEventListener('DOMContentLoaded', function () {
             modelSelect.disabled = false;
             sendButton.disabled = false;
             sendButton.classList.remove('disabled');
-
-            if (data.reset) {
-                addMessage('system', data.answer); // 시스템 메시지로 표시
-            } else if (data.answer) {
+        
+            if (data.reset_message) {
+                addMessage('system', data.reset_message);
+            }
+            if (data.answer) {
                 addMessage('bot', data.answer);
             } else {
                 addMessage('bot', '죄송합니다. 응답을 가져올 수 없습니다.');
@@ -202,6 +224,11 @@ document.addEventListener('DOMContentLoaded', function () {
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             return;
+        }
+        // 로고 숨기기
+        const chatLogo = document.getElementById('chat-logo');
+        if (chatLogo) {
+            chatLogo.style.display = 'none';
         }
 
         const messageElement = document.createElement('div');
@@ -234,6 +261,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // 메시지 복사 기능 추가
+        messageContent.addEventListener('touchstart', handleTouchStart, {passive: true});
+        messageContent.addEventListener('touchend', handleTouchEnd);
+
+        let touchTimer;
+
+        function handleTouchStart(e) {
+            touchTimer = setTimeout(() => {
+                copyToClipboard(text);
+            }, 1000); // 1초 이상 길게 누르면 복사
+        }
+
+        function handleTouchEnd(e) {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+            }
+        }
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('복사 성공');
+        }).catch(err => {
+            console.error('복사 실패', err);
+        });
     }
 
     function typeText(element, text, index = 0) {

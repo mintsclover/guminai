@@ -281,25 +281,6 @@ class VectorStoreManager:
             self.save_vector_store(VECTOR_STORE_PATH)
         return self.vector_store
 
-# 클로바 API를 사용하여 질문에 답변 생성
-def ask_clova(question, context, executor, model_preset):
-    # 모델에 따라 preset_text와 request_data 변경
-    preset_text = model_preset['preset_text']
-    request_data = model_preset['request_data']
-
-    # 프롬프트 생성
-    prompt = f"사전 정보:{context}\n사용자 질문: {question}\n"
-    preset_text.append({
-        "role": "user",
-        "content": prompt
-    })
-
-    request_data['messages'] = preset_text
-
-    response = executor.execute(request_data)
-    return response
-
-
 # 모델 프리셋 설정
 model_presets = {
     "model1": {
@@ -382,6 +363,9 @@ def chat():
     if not session.get('authenticated'):
         return redirect(url_for('index'))
     
+    # 모델 변경 시 세션 초기화
+    session['conversation_history'] = []
+    
     # 예시 질문 랜덤 선택
     num_questions = 3  # 표시할 질문의 수
     example_questions = random.sample(all_example_questions, num_questions)
@@ -399,6 +383,39 @@ def chat_api():
     selected_model = data.get('model', 'model1')
     model_preset = model_presets.get(selected_model, model_presets['model1'])
 
+    # 벡터 스토어 및 클로바 설정
+    vector_store_manager = VectorStoreManager()
+    vector_store_manager.get_vector_store()
+    completion_executor = CompletionExecutor(
+        host=CLOVA_HOST,
+        api_key=CLOVA_API_KEY,
+        api_key_primary_val=CLOVA_PRIMARY_KEY,
+        request_id=CLOVA_REQUEST_ID
+    )
+
+    # 컨텍스트 생성
+    context = generate_context(question, vector_store_manager)
+
+    # 대화 내역 관리
+    conversation_history, reset_message = manage_conversation_history(question)
+
+    # 모델에게 보낼 메시지 구성
+    messages = construct_messages(model_preset, conversation_history, context)
+
+    # 모델에 요청 보내기
+    response = get_model_response(completion_executor, model_preset, messages)
+
+    # 대화 내역에 봇의 응답 추가
+    conversation_history.append({'role': 'assistant', 'content': response})
+    session['conversation_history'] = conversation_history
+
+    # 채팅 기록 저장
+    save_chat_history(question, response)
+
+    # 응답 반환
+    return jsonify({'answer': response, 'reset_message': reset_message})
+
+def manage_conversation_history(question):
     # 대화 내역 초기화 또는 가져오기
     if 'conversation_history' not in session:
         session['conversation_history'] = []
@@ -407,42 +424,50 @@ def chat_api():
     # 사용자의 메시지 추가
     conversation_history.append({'role': 'user', 'content': question})
 
-    # 대화 내역이 20개(10회 대화)를 초과하면 초기화
-    if len(conversation_history) > 4:
+    # 기억력 제한 가져오기
+    max_memory_length = config.get('max_memory_length', 10)
+
+    # 기억력 초기화 여부 확인
+    reset_message = None
+    if len(conversation_history) > max_memory_length:
         conversation_history = []
         session['conversation_history'] = conversation_history
-        # 기억력 초기화 메시지 반환
-        return jsonify({'answer': '기억력이 초기화되었습니다!', 'reset': True})
+        reset_message = '기억력이 초기화되었습니다!'
 
-    # 프롬프트 메시지 생성
-    messages = model_preset['preset_text'] + conversation_history
+    return conversation_history, reset_message
 
-    # 답변 생성
-    completion_executor = CompletionExecutor(
-        host=CLOVA_HOST,
-        api_key=CLOVA_API_KEY,
-        api_key_primary_val=CLOVA_PRIMARY_KEY,
-        request_id=CLOVA_REQUEST_ID
-    )
+def construct_messages(model_preset, conversation_history, context):
+    # 모델 프리셋의 사전 설정 메시지 가져오기
+    preset_text = model_preset['preset_text'].copy()
+
+    # 대화 내역 추가
+    messages = preset_text + conversation_history
+
+    # 컨텍스트를 시스템 메시지로 추가
+    messages.append({'role': 'system', 'content': f'사전 정보: {context}'})
+
+    return messages
+
+def get_model_response(executor, model_preset, messages):
+    # 모델 요청 데이터 구성
     request_data = model_preset['request_data']
     request_data['messages'] = messages
 
-    response = completion_executor.execute(request_data)
+    # 모델에 요청 보내기
+    response = executor.execute(request_data)
+    return response
 
-    # 봇의 응답 추가
-    conversation_history.append({'role': 'assistant', 'content': response})
-    session['conversation_history'] = conversation_history
-
-    # 채팅 기록 저장
-    save_chat_history(question, response)
-
-    return jsonify({'answer': response})
 
 @app.route('/get_example_questions')
 def get_example_questions():
     num_questions = 3  # Number of questions to return
     example_questions = random.sample(all_example_questions, num_questions)
     return jsonify({'example_questions': example_questions})
+
+@app.route('/reset_conversation', methods=['POST'])
+def reset_conversation():
+    session['conversation_history'] = []
+    return '', 204
 
 # 관리자 페이지
 @app.route('/admin', methods=['GET', 'POST'])
