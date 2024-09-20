@@ -382,7 +382,7 @@ def chat_api():
     question = data.get('message')
 
     # 사용자가 "test"라고 입력하면 정해진 테스트용 문장을 반환
-    if question.strip().lower() == "test":
+    if question.strip().lower() == "test" or question.strip().lower() == "테스트" or question.strip().lower() == "ㅅㄷㄴㅅ":
         test_response = "이것은 테스트 응답입니다. 인공지능을 사용하지 않았습니다. 강아지가 흐느적거리며 조용히 집 앞 공원에서 빠르게 뛰놀다가 아름다운 바람을 느끼며 행복하게 웃었다."
         return jsonify({'answer': test_response, 'reset_message': None})
     
