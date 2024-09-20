@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>대화 기록</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h2>대화 기록</h2>
+    <table>
+        <tr>
+            <th>날짜</th>
+            <th>사용자 질문</th>
+            <th>봇의 답변</th>
+        </tr>
+        {% for log in chat_logs %}
+        <tr>
+            <td>{{ log[2] }}</td>
+            <td>{{ log[0] }}</td>
+            <td>{{ log[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
