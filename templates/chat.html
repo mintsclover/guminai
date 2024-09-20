@@ -34,7 +34,9 @@
         <div class="model-intro" id="model-intro"></div>
         <!-- 질문 예시 박스 -->
         <div class="example-questions" id="example-questions">
-            <button id="toggle-questions">접기 ▲</button>
+            <button id="toggle-questions">
+                <img src="{{ url_for('static', filename='images/arrow_down_icon.png') }}" alt="Toggle Questions">
+            </button>            
             <div id="questions-container">
                 {% for question in example_questions %}
                     <button class="example-question">{{ question }}</button>
