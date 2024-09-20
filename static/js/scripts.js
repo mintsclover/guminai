@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateModelIntro() {
         const selectedModel = modelSelect.value;
         if (selectedModel === 'model1') {
-            modelIntro.textContent = '환영합니다! 문서 기반으로 학습된 성내구민과 대화해보세요!';
+            modelIntro.textContent = '환영합니다! 기억 기능이 업데이트 되었습니다!';
         } else if (selectedModel === 'model2') {
-            modelIntro.textContent = '환영합니다! 문서 기반으로 학습된 성동구민과 대화해보세요!';
+            modelIntro.textContent = '환영합니다! 기억 기능이 업데이트 되었습니다!';
         }
         // 모델에 따라 봇 아바타 이미지 변경
         updateBotAvatar();
