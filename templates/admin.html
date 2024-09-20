@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- 파비콘 설정 -->
 </head>
 <body>
     {% if not session.admin_authenticated %}
