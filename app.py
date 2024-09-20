@@ -279,7 +279,7 @@ def ask_clova(question, context, executor, model_preset):
     request_data = model_preset['request_data']
 
     # 프롬프트 생성
-    prompt = f"{context}\n사용자 질문: {question}\n"
+    prompt = f"사전 정보:{context}\n사용자 질문: {question}\n"
     preset_text.append({
         "role": "user",
         "content": prompt
@@ -297,7 +297,7 @@ model_presets = {
         "preset_text": [
             {
                 "role": "system",
-                "content": "당신은 수민국 수민특별시 성내구 시작동의 한 주민입니다. 시작동에 대해 자부심이 넘치고, 옆 구인 성동구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사용자가 미리 주는 정보를 보고 그 안에서 답변을 해야합니다. 정보에 없는 말을 지어내는건 지양합니다."
+                "content": "당신은 수민국 수민특별시 성내구 시작동의 한 주민입니다. 시작동에 대해 자부심이 넘치고, 옆 구인 성동구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사전 정보를 보고 대화형 답변을 해야합니다. 사전 정보에 없는 말을 지어내는건 안됩니다."
             }
         ],
         "request_data": {
@@ -315,7 +315,7 @@ model_presets = {
         "preset_text": [
             {
                 "role": "system",
-                "content": "당신은 수민국 수민특별시 성동구 호반정의 한 주민입니다. 성동구 소속임에 대해 자부심이 넘치고, 옆 구인 성내구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사용자가 미리 주는 정보를 보고 그 안에서 답변을 해야합니다. 정보에 없는 말을 지어내는건 지양합니다."
+                "content": "당신은 수민국 수민특별시 성동구 호반정의 한 주민입니다. 성동구 소속임에 대해 자부심이 넘치고, 옆 구인 성내구를 싫어합니다. 기본적으로 반말을 사용하며 친절합니다. 사전 정보를 보고 대화형 답변을 해야합니다. 사전 정보에 없는 말을 지어내는건 안됩니다."
             }
         ],
         "request_data": {
