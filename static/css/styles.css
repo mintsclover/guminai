@@ -255,6 +255,8 @@ body {
     height: 24px;
 }
 
+
+/* 사이드 메뉴 스타일 */
 .side-menu {
     position: fixed;
     top: 0;
@@ -262,24 +264,20 @@ body {
     width: 250px;
     height: 100%;
     background-color: #fff;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
     overflow-x: hidden;
     transition: left 0.3s;
     z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
 }
 
-.side-menu.open {
-    left: 0;
+/* 모바일에서 사이드 메뉴 전체 화면 차지 */
+@media screen and (max-width: 768px) {
+    .side-menu {
+        width: 40%;
+    }
 }
 
-.side-menu-content {
-    padding: 20px;
-}
-
-.side-menu-content p {
-    margin-top: 0;
-}
-
+/* 오버레이 수정 */
 #overlay {
     display: none;
     position: fixed;
@@ -295,6 +293,30 @@ body {
     display: block;
 }
 
+.side-menu.open {
+    z-index: 1000;
+    left: 0;
+}
+
+/* 사이드 메뉴 내용 중앙 정렬 */
+.side-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 중앙 정렬 */
+    justify-content: center; /* 수직 중앙 정렬 */
+    height: 100%; /* 세로로 중앙 정렬을 위해 높이 설정 */
+}
+
+.side-menu-content p {
+    margin-top: 0;
+    text-align: center;
+}
+
+.side-menu-content a img {
+    width: 50px; /* 아이콘 크기 조정 */
+    height: 50px;
+    margin-top: 20px;
+}
 
 
 /* 모델 선택 버튼 스타일 */
