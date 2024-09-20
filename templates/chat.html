@@ -44,7 +44,9 @@
             </div>
         </div>
         <div class="chat-messages" id="chat-messages">
-            <!-- 메시지가 추가되는 영역 -->
+            <div class="chat-logo" id="chat-logo">
+                <img src="{{ url_for('static', filename='images/favicon.png') }}" alt="GuminAI 로고">
+            </div>
         </div>
         <div class="chat-input">
             <textarea id="chat-input" placeholder="메시지를 입력하세요" rows="1"></textarea>
