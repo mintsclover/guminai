@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 입력</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 뷰포트 메타 태그 추가 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>채팅에 입장하려면<br>비밀번호를 입력하세요</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post" class="login-form">
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit">입장</button>
+        </form>
+    </div>
+</body>
+</html>

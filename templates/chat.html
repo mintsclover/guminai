@@ -1,0 +1,39 @@
+<!-- templates/chat.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>수민국 AI 챗봇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 디자인을 위한 뷰포트 설정 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>수민국 AI 챗봇</h2>
+            <select id="model-select">
+                <option value="model1">성내구민</option>
+                <option value="model2">성동구민</option>
+            </select>
+        </div>
+        <!-- 모델 소개 박스 -->
+        <div class="model-intro" id="model-intro"></div>
+        <!-- 질문 예시 박스 -->
+        <div class="example-questions">
+            {% for question in example_questions %}
+                <button class="example-question">{{ question }}</button>
+            {% endfor %}
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- 메시지가 추가되는 영역 -->
+        </div>
+        <div class="chat-input">
+            <textarea id="chat-input" placeholder="메시지를 입력하세요" rows="1"></textarea>
+            <button id="send-button">
+                <img src="{{ url_for('static', filename='images/send_icon.png') }}" alt="Send">
+            </button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
