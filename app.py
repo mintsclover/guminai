@@ -140,6 +140,7 @@ class VectorStoreManager:
                 return None
 
             # 특수 기호 및 불필요한 문법 제거
+            text = re.sub(r'\{toc\}', '', text)  # {toc} 제거
             text = re.sub(r'<table[^>]*>', '', text)  # <table ...> 제거
             text = re.sub(r'#\w+', '', text)  # #색코드 제거
             text = re.sub(r'<#\w+>', '', text)  # <#색코드> 제거
@@ -518,8 +519,8 @@ def generate_context(question, vector_store_manager):
         context += f"{content}\n---\n"
 
         # 사용된 문서의 전문 로그 출력
-        logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
-        logging.info(f"내용:\n{content}\n")
+        # logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {doc.metadata['title']}")
+        # logging.info(f"내용:\n{content}\n")
 
     return context
 

@@ -80,6 +80,36 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
+    const toggleButton = document.getElementById('toggle-questions');
+    const questionsContainer = document.getElementById('questions-container');
+
+    toggleButton.addEventListener('click', function () {
+        if (questionsContainer.style.display === 'none') {
+            questionsContainer.style.display = 'flex';
+            toggleButton.textContent = '접기 ▲';
+        } else {
+            questionsContainer.style.display = 'none';
+            toggleButton.textContent = '펼치기 ▼';
+        }
+    });
+
+    const menuButton = document.getElementById('menu-button');
+    const sideMenu = document.getElementById('side-menu');
+    const overlay = document.createElement('div');
+    overlay.id = 'overlay';
+    document.body.appendChild(overlay);
+
+    menuButton.addEventListener('click', function () {
+        sideMenu.classList.add('open');
+        overlay.classList.add('show');
+    });
+
+    overlay.addEventListener('click', function () {
+        sideMenu.classList.remove('open');
+        overlay.classList.remove('show');
+    });
+
     function sendMessage() {
         const message = chatInput.value.trim();
         if (message === '') return;
@@ -221,33 +251,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-
-const toggleButton = document.getElementById('toggle-questions');
-const questionsContainer = document.getElementById('questions-container');
-
-toggleButton.addEventListener('click', function () {
-    if (questionsContainer.style.display === 'none') {
-        questionsContainer.style.display = 'flex';
-        toggleButton.textContent = '접기 ▲';
-    } else {
-        questionsContainer.style.display = 'none';
-        toggleButton.textContent = '펼치기 ▼';
-    }
-});
-
-const menuButton = document.getElementById('menu-button');
-const sideMenu = document.getElementById('side-menu');
-const overlay = document.createElement('div');
-overlay.id = 'overlay';
-document.body.appendChild(overlay);
-
-menuButton.addEventListener('click', function () {
-    sideMenu.classList.add('open');
-    overlay.classList.add('show');
-});
-
-overlay.addEventListener('click', function () {
-    sideMenu.classList.remove('open');
-    overlay.classList.remove('show');
-});
-
