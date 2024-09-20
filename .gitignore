@@ -4,6 +4,7 @@
 /wiki
 /과거모델
 .wsgi
+.db
 
 ### Flask ###
 instance/*

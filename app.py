@@ -14,6 +14,8 @@ import yaml
 from langchain.vectorstores import FAISS
 from langchain.schema import Document
 from langchain.embeddings import HuggingFaceEmbeddings
+import sqlite3
+from datetime import datetime
 
 # 환경 변수 및 설정 파일 로드
 load_dotenv()
@@ -400,11 +402,14 @@ def chat_api():
         request_id=CLOVA_REQUEST_ID
     )
 
-    # 컨텍스트 생성 로직 (생략 - 기존 코드와 동일)
+    # 컨텍스트 생성 로직
     context = generate_context(question, vector_store_manager)
 
     # 답변 생성
     answer = ask_clova(question, context, completion_executor, model_preset)
+
+    # 대화 내용 저장
+    save_chat_history(question, answer)
 
     return jsonify({'answer': answer})
 
@@ -429,6 +434,20 @@ def admin():
         return render_template('admin.html', success='설정이 업데이트되었습니다.', config=new_config)
 
     return render_template('admin.html', config=config)
+
+@app.route('/admin/chat_history')
+def chat_history():
+    if not session.get('admin_authenticated'):
+        return redirect(url_for('admin'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT user_message, bot_response, timestamp FROM chat_history ORDER BY timestamp DESC')
+    chat_logs = cursor.fetchall()
+
+    return render_template('chat_history.html', chat_logs=chat_logs)
+
+
 
 # 컨텍스트 생성 함수
 def generate_context(question, vector_store_manager):
@@ -500,5 +519,46 @@ def generate_context(question, vector_store_manager):
 
     return context
 
+def init_db():
+    conn = sqlite3.connect('chat_history.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS chat_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_message TEXT,
+            bot_response TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+from datetime import datetime
+
+def save_chat_history(user_message, bot_response):
+    db = get_db()
+    cursor = db.cursor()
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+        INSERT INTO chat_history (user_message, bot_response, timestamp)
+        VALUES (?, ?, ?)
+    ''', (user_message, bot_response, timestamp))
+    db.commit()
+
+from flask import g
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect('chat_history.db')
+    return g.db
+
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
+
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
