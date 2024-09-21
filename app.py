@@ -223,6 +223,9 @@ def chat_history():
 
     return render_template('chat_history.html', chat_logs=chat_logs)
 
+import logging
+import math
+
 def generate_context(question):
     """
     사용자 질문에 대한 컨텍스트를 생성하는 함수
@@ -244,34 +247,86 @@ def generate_context(question):
         doc = vector_store_manager.vector_store.docstore[doc_id]
         docs_and_scores.append((doc, score))
 
+    # 총 유사도 점수 계산
+    total_similarity = sum(score for _, score in docs_and_scores)
+    if total_similarity == 0:
+        total_similarity = 1  # 제로 디비전 방지
+
     # 컨텍스트 생성
     max_total_length = int(config.get('max_total_length', 1500))
-    total_length = 0
     context = ""
+    total_length = 0
 
-    for idx, (doc, score) in enumerate(docs_and_scores):
+    for doc, score in docs_and_scores:
         section_content = doc.page_content
-        section_title = doc.metadata['title']
-        section_length = len(section_content)
+        section_title = doc.metadata.get('title', 'Untitled')
 
-        if total_length + section_length > max_total_length:
-            # 남은 길이만큼 자름
-            section_content = section_content[:max_total_length - total_length]
-            section_length = len(section_content)
-            if section_length == 0:
-                continue
+        # 각 문서의 비중 계산
+        weight = score / total_similarity
+        allocated_length = math.floor(max_total_length * weight)
 
-        total_length += section_length
-        context += f"# {section_title}\n{section_content}\n---\n"
+        # 제목과 구분자의 길이 계산
+        title_text = f"# {section_title}\n"
+        separator_text = "\n---\n"
+        title_length = len(title_text)
+        separator_length = len(separator_text)
+
+        # 할당된 길이에서 제목과 구분자 길이를 제외
+        content_max_length = allocated_length - title_length - separator_length
+        if content_max_length <= 0:
+            continue  # 할당된 길이가 제목과 구분자를 포함할 수 없는 경우 건너뜀
+
+        # 내용 자르기 (문장의 중간에서 자르지 않도록)
+        truncated_content = truncate_text(section_content, content_max_length)
+        section_length = len(truncated_content)
+
+        # 강조를 위해 유사도 점수를 기반으로 마크업 추가
+        emphasis_level = min(int(score * 10), 5)  # 예: 최대 5단계 강조
+        emphasis = "*" * emphasis_level
+        emphasized_title = f"{emphasis} {title_text}{emphasis}\n"
+
+        # 실제 추가될 전체 길이
+        actual_length = len(emphasized_title) + section_length + len(separator_text)
+        if total_length + actual_length > max_total_length:
+            # 남은 길이에 맞게 조정
+            remaining_length = max_total_length - total_length
+            if remaining_length <= 0:
+                break
+            # 강조된 제목과 구분자가 포함될 수 있는지 확인
+            if remaining_length > len(emphasized_title) + len(separator_text):
+                content_max_length = remaining_length - len(emphasized_title) - len(separator_text)
+                truncated_content = truncate_text(section_content, content_max_length)
+                section_length = len(truncated_content)
+                context += f"{emphasized_title}{truncated_content}{separator_text}"
+                total_length += len(emphasized_title) + section_length + len(separator_text)
+            break
+        else:
+            context += f"{emphasized_title}{truncated_content}{separator_text}"
+            total_length += actual_length
 
         # 사용된 문서의 정보 로그 출력
-        # logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {section_title}")
-        # logging.info(f"내용:\n{section_content}\n")
-
-        if total_length >= max_total_length:
-            break
+        logging.info(f"유사도 점수: {score}, 제목: {section_title}")
+        logging.info(f"내용 (잘림):\n{truncated_content}\n")
 
     return context
+
+def truncate_text(text, max_length):
+    """
+    주어진 최대 길이 내에서 텍스트를 자르되, 가능한 한 문장의 끝에서 자릅니다.
+    """
+    if len(text) <= max_length:
+        return text
+    # 가능한 마지막 문장 끝 찾기
+    truncated = text[:max_length]
+    last_period = truncated.rfind('.')
+    last_newline = truncated.rfind('\n')
+    split_pos = max(last_period, last_newline)
+    if split_pos != -1:
+        return truncated[:split_pos+1]
+    else:
+        # 문장 끝을 찾지 못하면 그냥 자름
+        return truncated
+
 
 def save_chat_history(user_message, bot_response):
     """
