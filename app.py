@@ -265,8 +265,8 @@ def generate_context(question):
         context += f"# {section_title}\n{section_content}\n---\n"
 
         # 사용된 문서의 정보 로그 출력
-        logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {section_title}")
-        logging.info(f"내용:\n{section_content}\n")
+        # logging.info(f"유사도 순위: {idx + 1}, 점수: {score}, 제목: {section_title}")
+        # logging.info(f"내용:\n{section_content}\n")
 
         if total_length >= max_total_length:
             break
