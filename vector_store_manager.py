@@ -120,7 +120,7 @@ class VectorStoreManager:
 
                 # 특수 기호 및 불필요한 문법 제거
                 section_content = re.sub(r'#+', '', section_content)
-                # section_content_clean = self.clean_text(section_content)
+                #section_content_clean = self.clean_text(section_content)
 
                 # 제목과 내용에 각각 0.5의 가중치를 부여하여 임베딩 생성
                 title_embedding = np.array(self.embedding_function.embed_query(section_title), dtype='float32')
