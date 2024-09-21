@@ -4,6 +4,6 @@ files: None
 folder_path: wiki
 log_level: INFO
 max_total_length: 1600
-top_k: 3
+top_k: 5
 vector_store_path: vector_store.index
 max_memory_length: 10
