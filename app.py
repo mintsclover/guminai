@@ -89,6 +89,7 @@ def chat():
 
 # 채팅 API 엔드포인트
 @app.route('/chat_api', methods=['POST'])
+@app.route('/chat_api', methods=['POST'])
 def chat_api():
     if not session.get('authenticated'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -100,14 +101,14 @@ def chat_api():
     if question.strip().lower() in ["test", "테스트", "ㅅㄷㄴㅅ"]:
         test_response = "이것은 테스트 응답입니다. 인공지능을 사용하지 않았습니다."
         return jsonify({'answer': test_response, 'reset_message': None})
-    
+
     selected_model = data.get('model', 'model1')
     model_preset = model_presets.get(selected_model, model_presets['model1'])
 
     # 컨텍스트 생성
     context = generate_context(question)
 
-    # 대화 내역 관리
+    # 대화 내역 관리 (매 응답 후 초기화)
     conversation_history, reset_message = manage_conversation_history(question)
 
     # 모델에게 보낼 메시지 구성
@@ -128,27 +129,16 @@ def chat_api():
 
 def manage_conversation_history(question):
     """
-    대화 내역을 관리하는 함수
+    대화 내역을 관리하는 함수 (매 응답 후 초기화)
     """
     # 대화 내역 초기화 또는 가져오기
-    if 'conversation_history' not in session:
-        session['conversation_history'] = []
-    conversation_history = session['conversation_history']
+    session['conversation_history'] = [{'role': 'user', 'content': question}]
+    
+    # 기억력 초기화 메시지 설정
+    reset_message = '기억력이 초기화되었습니다!'
+    
+    return session['conversation_history'], reset_message
 
-    # 사용자의 메시지 추가
-    conversation_history.append({'role': 'user', 'content': question})
-
-    # 기억력 제한 가져오기
-    max_memory_length = int(config.get('max_memory_length', 10))
-
-    # 기억력 초기화 여부 확인
-    reset_message = None
-    if len(conversation_history) > max_memory_length:
-        conversation_history = []
-        session['conversation_history'] = conversation_history
-        reset_message = '기억력이 초기화되었습니다!'
-
-    return conversation_history, reset_message
 
 def construct_messages(model_preset, conversation_history, context):
     """

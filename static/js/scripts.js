@@ -67,10 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-    
 
     sendButton.addEventListener('click', sendMessage);
-    
+
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (isMobile) {
@@ -127,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
     }
-    
+
     // Call refreshExampleQuestions initially
     refreshExampleQuestions();
 
@@ -208,13 +207,18 @@ document.addEventListener('DOMContentLoaded', function () {
             sendButton.disabled = false;
             sendButton.classList.remove('disabled');
         
-            if (data.reset_message) {
-                addMessage('system', data.reset_message);
-            }
             if (data.answer) {
-                addMessage('bot', data.answer);
+                addMessage('bot', data.answer, function() {
+                    if (data.reset_message) {
+                        addMessage('system', data.reset_message);
+                    }
+                });
             } else {
-                addMessage('bot', '죄송합니다. 응답을 가져올 수 없습니다.');
+                addMessage('bot', '죄송합니다. 응답을 가져올 수 없습니다.', function() {
+                    if (data.reset_message) {
+                        addMessage('system', data.reset_message);
+                    }
+                });
             }
         })
         .catch(error => {
@@ -229,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function addMessage(sender, text) {
+    function addMessage(sender, text, callback) { // 수정된 함수
         if (sender === 'system') {
             const messageElement = document.createElement('div');
             messageElement.classList.add('system-message');
@@ -259,7 +263,9 @@ document.addEventListener('DOMContentLoaded', function () {
         messageContent.classList.add('message-content');
 
         if (sender === 'bot') {
-            typeText(messageContent, text);
+            typeText(messageContent, text, 0, function() { // 수정된 부분
+                if (callback) callback(); // 타이핑 완료 후 콜백 호출
+            });
         } else {
             messageContent.textContent = text;
         }
@@ -302,13 +308,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function typeText(element, text, index = 0) {
+    function typeText(element, text, index = 0, callback) { // 수정된 함수
         if (index < text.length) {
             element.textContent += text.charAt(index);
             setTimeout(() => {
-                typeText(element, text, index + 1);
+                typeText(element, text, index + 1, callback);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }, 30); // 타이핑 속도 조절 (밀리초)
+        } else {
+            if (callback) callback(); // 타이핑 완료 시 콜백 호출
         }
     }
 
