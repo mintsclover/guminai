@@ -226,9 +226,12 @@ def chat_history():
 import logging
 import math
 
-def generate_context(question):
+def generate_context(question, alpha=1.0):
     """
     사용자 질문에 대한 컨텍스트를 생성하는 함수
+    :param question: 사용자 질문 문자열
+    :param alpha: 가중치 조정 파라미터 (기본값: 1.0)
+    :return: 생성된 컨텍스트 문자열
     """
     # 질문 임베딩
     question_embedding = vector_store_manager.get_embedding(question).reshape(1, -1)
@@ -247,23 +250,31 @@ def generate_context(question):
         doc = vector_store_manager.vector_store.docstore[doc_id]
         docs_and_scores.append((doc, score))
 
-    # 총 유사도 점수 계산
-    total_similarity = sum(score for _, score in docs_and_scores)
-    if total_similarity == 0:
-        total_similarity = 1  # 제로 디비전 방지
+    if not docs_and_scores:
+        logging.warning("유사한 문서를 찾을 수 없습니다.")
+        return ""
+
+    # 문서 순위별 가중치 계산 (지수 함수 사용)
+    weights = []
+    for rank, (doc, score) in enumerate(docs_and_scores, start=1):
+        weight = math.exp(-alpha * (rank - 1))
+        weights.append(weight)
+
+    # 가중치 정규화
+    total_weight = sum(weights)
+    normalized_weights = [w / total_weight for w in weights]
 
     # 컨텍스트 생성
     max_total_length = int(config.get('max_total_length', 1500))
     context = ""
     total_length = 0
 
-    for doc, score in docs_and_scores:
+    for i, (doc, score) in enumerate(docs_and_scores):
         section_content = doc.page_content
         section_title = doc.metadata.get('title', 'Untitled')
 
-        # 각 문서의 비중 계산
-        weight = score / total_similarity
-        allocated_length = math.floor(max_total_length * weight)
+        # 할당할 문자 수 계산
+        allocated_length = math.floor(normalized_weights[i] * max_total_length)
 
         # 제목과 구분자의 길이 계산
         title_text = f"# {section_title}\n"
@@ -280,39 +291,36 @@ def generate_context(question):
         truncated_content = truncate_text(section_content, content_max_length)
         section_length = len(truncated_content)
 
-        # 강조를 위해 유사도 점수를 기반으로 마크업 추가
-        emphasis_level = min(int(score * 10), 5)  # 예: 최대 5단계 강조
-        emphasis = "*" * emphasis_level
-        emphasized_title = f"{emphasis} {title_text}{emphasis}\n"
-
         # 실제 추가될 전체 길이
-        actual_length = len(emphasized_title) + section_length + len(separator_text)
+        actual_length = len(title_text) + section_length + len(separator_text)
+
         if total_length + actual_length > max_total_length:
             # 남은 길이에 맞게 조정
             remaining_length = max_total_length - total_length
-            if remaining_length <= 0:
-                break
-            # 강조된 제목과 구분자가 포함될 수 있는지 확인
-            if remaining_length > len(emphasized_title) + len(separator_text):
-                content_max_length = remaining_length - len(emphasized_title) - len(separator_text)
-                truncated_content = truncate_text(section_content, content_max_length)
-                section_length = len(truncated_content)
-                context += f"{emphasized_title}{truncated_content}{separator_text}"
-                total_length += len(emphasized_title) + section_length + len(separator_text)
-            break
+            if remaining_length <= len(title_text) + len(separator_text):
+                break  # 제목과 구분자를 추가할 공간이 부족하면 종료
+            content_max_length = remaining_length - len(title_text) - len(separator_text)
+            truncated_content = truncate_text(section_content, content_max_length)
+            section_length = len(truncated_content)
+            context += f"{title_text}{truncated_content}{separator_text}"
+            total_length += len(title_text) + len(truncated_content) + len(separator_text)
+            break  # 최대 길이에 도달했으므로 루프 종료
         else:
-            context += f"{emphasized_title}{truncated_content}{separator_text}"
+            context += f"{title_text}{truncated_content}{separator_text}"
             total_length += actual_length
 
         # 사용된 문서의 정보 로그 출력
-        logging.info(f"유사도 점수: {score}, 제목: {section_title}")
-        logging.info(f"내용 (잘림):\n{truncated_content}\n")
+        # logging.info(f"유사도 점수: {score}, 제목: {section_title}, 할당 문자 수: {allocated_length}")
+        # logging.info(f"요약 내용:\n{truncated_content}\n")
 
     return context
 
 def truncate_text(text, max_length):
     """
     주어진 최대 길이 내에서 텍스트를 자르되, 가능한 한 문장의 끝에서 자릅니다.
+    :param text: 원본 텍스트
+    :param max_length: 최대 문자 수
+    :return: 잘린 텍스트
     """
     if len(text) <= max_length:
         return text
