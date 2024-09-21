@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
         chatInput.style.height = chatInput.scrollHeight + 'px';
     });
 
-    //예사 질문 박스
+    //예시 질문 박스
     const exampleQuestions = document.querySelectorAll('.example-question');
 
     exampleQuestions.forEach(function (button) {
@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sendMessage();
         });
     });
+
     function refreshExampleQuestions() {
         fetch('/get_example_questions')
             .then(response => response.json())
