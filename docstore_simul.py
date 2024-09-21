@@ -13,6 +13,8 @@ class DocumentSimulator:
         documents = self.vector_store_manager.preprocess_document(file_path)
         
         # 결과 출력
+        if not documents:
+            print("No documents were generated. Please check the preprocessing steps.")
         for i, doc in enumerate(documents, 1):
             print(f"Document {i}:")
             print(f"Title: {doc.metadata['title']}")
