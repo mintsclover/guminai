@@ -19,10 +19,10 @@
         ],
         "request_data": {
             "topP": 0.7,
-            "topK": 40,
+            "topK": 20,
             "maxTokens": 350,
             "temperature": 0.4,
-            "repeatPenalty": 6.0,
+            "repeatPenalty": 2.0,
             "stopBefore": [],
             "includeAiFilters": true,
             "seed": 0
@@ -48,10 +48,10 @@
         ],
         "request_data": {
             "topP": 0.7,
-            "topK": 40,
+            "topK": 20,
             "maxTokens": 350,
             "temperature": 0.4,
-            "repeatPenalty": 6.0,
+            "repeatPenalty": 2.0,
             "stopBefore": [],
             "includeAiFilters": true,
             "seed": 0
@@ -77,10 +77,10 @@
         ],
         "request_data": {
             "topP": 0.7,
-            "topK": 40,
+            "topK": 20,
             "maxTokens": 350,
             "temperature": 0.4,
-            "repeatPenalty": 6.0,
+            "repeatPenalty": 2.0,
             "stopBefore": [],
             "includeAiFilters": true,
             "seed": 0
