@@ -1,0 +1,89 @@
+{
+    "model1": {
+        "display_name": "예시 모델1",
+        "description": "이곳에 모델1의 설명을 작성해주세요.",
+        "avatar_image": "bot_avatar_model1.png",
+        "preset_text": [
+            {
+                "role": "system",
+                "content": "이곳에 시스템 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "user",
+                "content": "이곳에 사용자 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "assistant",
+                "content": "이곳에 어시스턴트 응답을 작성해주세요."
+            }
+        ],
+        "request_data": {
+            "topP": 0.7,
+            "topK": 40,
+            "maxTokens": 350,
+            "temperature": 0.4,
+            "repeatPenalty": 6.0,
+            "stopBefore": [],
+            "includeAiFilters": true,
+            "seed": 0
+        }
+    },
+    "model2": {
+        "display_name": "예시 모델2",
+        "description": "이곳에 모델2의 설명을 작성해주세요.",
+        "avatar_image": "bot_avatar_model2.png",
+        "preset_text": [
+            {
+                "role": "system",
+                "content": "이곳에 시스템 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "user",
+                "content": "이곳에 사용자 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "assistant",
+                "content": "이곳에 어시스턴트 응답을 작성해주세요."
+            }
+        ],
+        "request_data": {
+            "topP": 0.7,
+            "topK": 40,
+            "maxTokens": 350,
+            "temperature": 0.4,
+            "repeatPenalty": 6.0,
+            "stopBefore": [],
+            "includeAiFilters": true,
+            "seed": 0
+        }
+    },
+    "model3": {
+        "display_name": "예시 모델3",
+        "description": "이곳에 모델3의 설명을 작성해주세요.",
+        "avatar_image": "bot_avatar_model3.png",
+        "preset_text": [
+            {
+                "role": "system",
+                "content": "이곳에 시스템 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "user",
+                "content": "이곳에 사용자 프롬프트를 작성해주세요."
+            },
+            {
+                "role": "assistant",
+                "content": "이곳에 어시스턴트 응답을 작성해주세요."
+            }
+        ],
+        "request_data": {
+            "topP": 0.7,
+            "topK": 40,
+            "maxTokens": 350,
+            "temperature": 0.4,
+            "repeatPenalty": 6.0,
+            "stopBefore": [],
+            "includeAiFilters": true,
+            "seed": 0
+        }
+    }
+}

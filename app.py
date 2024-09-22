@@ -7,6 +7,7 @@ import logging
 from datetime import datetime
 import sqlite3
 import faiss
+import shutil
 
 # 환경 변수 및 설정 파일 로드
 from dotenv import load_dotenv
@@ -28,13 +29,52 @@ app.secret_key = os.getenv("SECRET_KEY")
 CHAT_PASSWORD = os.getenv("CHAT_PASSWORD")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
-# 예시 질문 로드
-with open('example_questions.json', 'r', encoding='utf-8') as f:
-    example_questions_data = json.load(f)
-    all_example_questions = example_questions_data.get('questions', [])
+# 초기 설정 파일 생성 함수
+def setup_files():
+    # example_questions.json 생성
+    if not os.path.exists('example_questions.json'):
+        if os.path.exists('example_questions.template.json'):
+            shutil.copy('example_questions.template.json', 'example_questions.json')
+            logging.info("example_questions.json 파일이 생성되었습니다. 원하는 질문으로 수정해주세요.")
+        else:
+            logging.error("example_questions.template.json 파일이 존재하지 않습니다.")
+    
+    # model_presets.json 생성
+    if not os.path.exists('model_presets.json'):
+        if os.path.exists('model_presets.template.json'):
+            shutil.copy('model_presets.template.json', 'model_presets.json')
+            logging.info("model_presets.json 파일이 생성되었습니다. 원하는 설정으로 수정해주세요.")
+        else:
+            logging.error("model_presets.template.json 파일이 존재하지 않습니다.")
 
-# 모델 프리셋 임포트
-from model_presets import model_presets
+# 초기 설정 실행
+setup_files()
+
+# 예시 질문 로드 함수
+def load_questions():
+    if not os.path.exists('example_questions.json'):
+        logging.warning("example_questions.json 파일이 없으므로 생성되었습니다. 원하는 질문으로 수정해주세요.")
+        return []
+    
+    with open('example_questions.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return data.get('questions', [])
+
+# 예시 질문 로드
+all_example_questions = load_questions()
+
+# 모델 프리셋 로드 함수
+def load_model_presets():
+    if not os.path.exists('model_presets.json'):
+        logging.warning("model_presets.json 파일이 없으므로 생성되었습니다. 원하는 설정으로 수정해주세요.")
+        return {}
+    
+    with open('model_presets.json', 'r', encoding='utf-8') as f:
+        model_presets = json.load(f)
+    return model_presets
+
+# 모델 프리셋 로드
+model_presets = load_model_presets()
 
 # 벡터 스토어 매니저 임포트
 from vector_store_manager import VectorStoreManager
@@ -83,9 +123,19 @@ def chat():
     
     # 예시 질문 랜덤 선택
     num_questions = 3  # 표시할 질문의 수
-    example_questions = random.sample(all_example_questions, num_questions)
+    if len(all_example_questions) >= num_questions:
+        example_questions = random.sample(all_example_questions, num_questions)
+    else:
+        example_questions = all_example_questions
     
-    return render_template('chat.html', models=model_presets.keys(), example_questions=example_questions)
+    # 모델 정보 전달
+    models = {model_key: {
+        'display_name': model_info.get('display_name', model_key),
+        'description': model_info.get('description', ''),
+        'avatar_image': model_info.get('avatar_image', 'bot_avatar.png')
+    } for model_key, model_info in model_presets.items()}
+    
+    return render_template('chat.html', models=models, example_questions=example_questions)
 
 # 채팅 API 엔드포인트
 @app.route('/chat_api', methods=['POST'])
@@ -102,7 +152,10 @@ def chat_api():
         return jsonify({'answer': test_response, 'reset_message': None})
 
     selected_model = data.get('model', 'model1')
-    model_preset = model_presets.get(selected_model, model_presets['model1'])
+    model_preset = model_presets.get(selected_model, model_presets.get('model1', {}))
+
+    if not model_preset:
+        return jsonify({'error': 'Model preset not found'}), 400
 
     # 컨텍스트 생성
     context = generate_context(question)
@@ -156,13 +209,14 @@ def construct_messages(model_preset, conversation_history, context):
     모델에게 전달할 메시지를 구성하는 함수
     """
     # 모델 프리셋의 사전 설정 메시지 가져오기
-    preset_text = model_preset['preset_text'].copy()
+    preset_text = model_preset.get('preset_text', []).copy()
 
     # 대화 내역 추가
     messages = preset_text + conversation_history
 
     # 컨텍스트를 시스템 메시지로 추가
-    messages.append({'role': 'system', 'content': f'사전 정보: {context}'})
+    if context:
+        messages.append({'role': 'system', 'content': f'사전 정보: {context}'})
 
     return messages
 
@@ -171,7 +225,7 @@ def get_model_response(model_preset, messages):
     모델에게 요청을 보내고 응답을 받는 함수
     """
     # 모델 요청 데이터 구성
-    request_data = model_preset['request_data'].copy()
+    request_data = model_preset.get('request_data', {}).copy()
     request_data['messages'] = messages
 
     # 모델에 요청 보내기
@@ -181,7 +235,10 @@ def get_model_response(model_preset, messages):
 @app.route('/get_example_questions')
 def get_example_questions():
     num_questions = 3  # 표시할 질문의 수
-    example_questions = random.sample(all_example_questions, num_questions)
+    if len(all_example_questions) >= num_questions:
+        example_questions = random.sample(all_example_questions, num_questions)
+    else:
+        example_questions = all_example_questions
     return jsonify({'example_questions': example_questions})
 
 @app.route('/reset_conversation', methods=['POST'])
@@ -292,7 +349,7 @@ def generate_context(question, alpha=1.0):
         section_length = len(truncated_content)
 
         # 실제 추가될 전체 길이
-        actual_length = len(title_text) + section_length + len(separator_text)
+        actual_length = len(title_text) + len(truncated_content) + len(separator_text)
 
         if total_length + actual_length > max_total_length:
             # 남은 길이에 맞게 조정
@@ -305,14 +362,15 @@ def generate_context(question, alpha=1.0):
             context += f"{title_text}{truncated_content}{separator_text}"
             total_length += len(title_text) + len(truncated_content) + len(separator_text)
             break  # 최대 길이에 도달했으므로 루프 종료
+
         else:
             context += f"{title_text}{truncated_content}{separator_text}"
             total_length += actual_length
 
         # 사용된 문서의 정보 로그 출력
-        # logging.info(f"유사도 점수: {score}, 제목: {section_title}, 할당 문자 수: {allocated_length}")
-        # logging.info(f"요약 내용:\n{truncated_content}\n")
-
+        logging.info(f"유사도 점수: {score}, 제목: {section_title}, 할당 문자 수: {allocated_length}")
+        logging.info(f"요약 내용:\n{truncated_content}\n")
+    logging.info(f"컨텍스트: {context}\n")
     return context
 
 def truncate_text(text, max_length):
@@ -334,7 +392,6 @@ def truncate_text(text, max_length):
     else:
         # 문장 끝을 찾지 못하면 그냥 자름
         return truncated
-
 
 def save_chat_history(user_message, bot_response):
     """

@@ -1,6 +1,21 @@
 # Created by https://www.toptal.com/developers/gitignore/api/flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask
 
+# 실제 설정 파일
+example_questions.json
+model_presets.json
+
+# Python cache 파일
+__pycache__/
+*.pyc
+
+# 환경 변수 파일
+.env
+
+# 데이터베이스 파일
+chat_history.db
+
+# 기타 로컬 파일들
 /wiki
 /과거모델
 .wsgi

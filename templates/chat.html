@@ -1,12 +1,11 @@
-<!-- templates/chat.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>GuminAI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 디자인을 위한 뷰포트 설정 -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- 파비콘 설정 -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  <!-- CSS 파일 연결 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="chat-container">
@@ -16,9 +15,9 @@
             </button>
             <h2>GuminAI</h2>
             <select id="model-select">
-                <option value="model1">성내구민</option>
-                <option value="model2">성동구민</option>
-                <option value="model3">도날드(BETA)</option>
+                {% for model_key, model_info in models.items() %}
+                    <option value="{{ model_key }}">{{ model_info.display_name }}</option>
+                {% endfor %}
             </select>
         </div>
         <!-- 사이드 메뉴 -->
@@ -47,7 +46,7 @@
         <div class="chat-messages" id="chat-messages">
             <div class="chat-logo" id="chat-logo">
                 <img src="{{ url_for('static', filename='images/favicon.png') }}" alt="GuminAI 로고">
-                <p>안녕하세요! 구미나이입니다. 무엇을 도와드릴까요?</p>
+                <p>안녕하세요! GuminAI입니다. 무엇을 도와드릴까요?</p>
             </div>
         </div>
         <div class="chat-input">
@@ -57,6 +56,10 @@
             </button>
         </div>
     </div>
+    <script>
+        // Flask에서 전달된 모델 정보를 JavaScript 변수로 변환
+        const modelDescriptions = {{ models | tojson }};
+    </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
