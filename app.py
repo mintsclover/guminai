@@ -261,6 +261,15 @@ def admin():
     # 설정 변경 로직
     if request.method == 'POST':
         new_config = request.form.to_dict()
+
+        # 정수로 변환 가능한 값들은 정수로 변환
+        for key, value in new_config.items():
+            try:
+                if value.isdigit():  # 정수인지 확인
+                    new_config[key] = int(value)
+            except ValueError:
+                continue  # 정수가 아닌 경우 그대로 둠
+
         try:
             with open('config.yaml', 'w', encoding='utf-8') as f:
                 yaml.dump(new_config, f, allow_unicode=True)
@@ -286,7 +295,7 @@ def chat_history():
         logging.error(f"채팅 기록 조회 중 오류 발생: {e}")
         return render_template('chat_history.html', chat_logs=[], error='채팅 기록을 불러오는 중 오류가 발생했습니다.')
 
-def generate_context(question, alpha=1.0):
+def generate_context(question, alpha=int(config.get('alpha', 1))):
     """
     사용자 질문에 대한 컨텍스트를 생성하는 함수
     :param question: 사용자 질문 문자열
