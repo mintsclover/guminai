@@ -163,6 +163,7 @@ body {
 /* 메시지 내용 스타일 */
 .message-content {
     flex: 1;
+    padding: 0 10px;
 }
 
 /* 시스템 메시지 스타일 */

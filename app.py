@@ -368,9 +368,9 @@ def generate_context(question, alpha=1.0):
             total_length += actual_length
 
         # 사용된 문서의 정보 로그 출력
-        logging.info(f"유사도 점수: {score}, 제목: {section_title}, 할당 문자 수: {allocated_length}")
-        logging.info(f"요약 내용:\n{truncated_content}\n")
-    logging.info(f"컨텍스트: {context}\n")
+        # logging.info(f"유사도 점수: {score}, 제목: {section_title}, 할당 문자 수: {allocated_length}")
+        # logging.info(f"요약 내용:\n{truncated_content}\n")
+    # logging.info(f"컨텍스트: {context}\n")
     return context
 
 def truncate_text(text, max_length):
