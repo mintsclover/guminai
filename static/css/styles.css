@@ -1,82 +1,74 @@
-/* static/css/styles.css */
-html, body{
-	width: 100%;
+/* =======================================
+   기본 리셋 및 기본 스타일
+======================================= */
+
+/* 전체 문서의 너비와 높이 설정 */
+html, body {
+    width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
+/* 기본 글꼴과 배경색 설정 */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #e5ddd5; /* 배경색 통일 */
     display: flex;
     justify-content: center;
-    margin: 0;
 }
 
+/* =======================================
+   컨테이너 스타일
+======================================= */
+
+/* 로그인 및 관리자 컨테이너 공통 스타일 */
 .login-container, .admin-container {
     display: flex;
-    width: 300px;
+    width: 100%; /* 고정 너비 제거 */
+    max-width: 300px; /* 최대 너비 설정 */
     margin: 100px auto;
     text-align: center;
     flex-direction: column;
     align-items: center;
+    padding: 0 10px; /* 좌우 패딩 추가 */
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-.login-container h2, .admin-container h2 {
-    margin-bottom: 20px;
+/* 관리자 컨테이너 내부 버튼 스타일 */
+.admin-container .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3CB371;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
 }
 
-.login-container input, .admin-container input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
+.admin-container .button:hover {
+    background-color: #2e8b57;
 }
 
-.login-container button, .admin-container button {
-    width: 100%;
-    padding: 10px;
-}
-
-.login-form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.error {
-    color: red;
-}
-
-.success {
-    color: green;
-}
-
-/* 반응형 디자인을 위한 컨테이너 설정 */
+/* 채팅 컨테이너 스타일 */
 .chat-container {
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: #FFFFFF; /* 배경색을 화이트로 설정 */
+    background-color: #e5ddd5; /* 배경색 통일 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-@media screen and (max-width: 768px) {
-    .login-container, .admin-container {
-        margin: 10px;
-    }
+/* =======================================
+   헤더 스타일
+======================================= */
 
-    .chat-container {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        /* 모바일 꽉 차게 */
-        position : fixed;
-        overflow : hidden;
-    }
-}
-
-/* 상단바 스타일 */
+/* 채팅 상단바 스타일 */
 .chat-header {
     background-color: #3CB371; /* 고급스러운 진한 녹색 */
     padding: 10px;
@@ -84,36 +76,52 @@ body {
     display: flex;
     align-items: center;
     position: relative;
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
+/* 헤더 제목 위치 조정 */
 .chat-header h2 {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    text-align: center;
     margin: 0;
 }
 
+/* 모델 선택 드롭다운 스타일 */
+#model-select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #4a76a8;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#model-select option {
+    color: black;
+}
+
+#model-select:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+/* =======================================
+   메시지 스타일
+======================================= */
+
+/* 채팅 메시지 컨테이너 */
 .chat-messages {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
     background-color: white;
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-/* 모델 소개 박스 */
-.model-intro {
-    background-color: #f9f9f9;
-    padding: 15px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    font-size: 16px;
-    color: #333;
-}
-
-
-/* 채팅 메시지 스타일 */
+/* 개별 메시지 스타일 */
 .message {
     margin-bottom: 10px;
     padding: 10px;
@@ -123,27 +131,28 @@ body {
     word-wrap: break-word;
     display: flex;
     align-items: flex-end;
+    animation: fadeIn 0.3s; /* 말풍선 애니메이션 */
 }
 
+/* 사용자 메시지 스타일 */
 .message.user {
     background-color: #E6F4EA; /* 연한 녹색 톤 */
     align-self: flex-end;
     margin-right: 10px;
 }
 
+/* 봇 메시지 스타일 */
 .message.bot {
     background-color: #F1F0F0;
     align-self: flex-start;
     margin-left: 10px;
 }
 
-
-/* 아바타 이미지 */
+/* 메시지 아바타 이미지 */
 .message .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    margin-right: 10px;
 }
 
 .message.user .avatar {
@@ -151,20 +160,12 @@ body {
     margin-right: 0;
 }
 
+/* 메시지 내용 스타일 */
 .message-content {
     flex: 1;
-
-
-/* 말풍선 애니메이션 */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
-.message {
-    animation: fadeIn 0.3s;
-}}
-
+/* 시스템 메시지 스타일 */
 .system-message {
     text-align: center;
     font-size: 12px;
@@ -172,8 +173,7 @@ body {
     margin: 10px 0;
 }
 
-
-/* 말풍선 꼬리 추가 */
+/* 메시지 말풍선 꼬리 */
 .message.user::after {
     content: '';
     position: absolute;
@@ -194,15 +194,20 @@ body {
     border-color: transparent #f1f0f0 transparent transparent;
 }
 
-/* 채팅 입력란 스타일 */
+/* =======================================
+   입력란 스타일
+======================================= */
+
+/* 채팅 입력란 컨테이너 */
 .chat-input {
     display: flex;
     padding: 10px;
     background-color: #f0f0f0;
     align-items: center;
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-/* 채팅 입력란 스타일 */
+/* 텍스트 영역 스타일 */
 .chat-input textarea {
     flex: 1;
     padding: 10px;
@@ -212,6 +217,7 @@ body {
     max-height: 150px;
     overflow-y: auto;
     font-size: 16px;
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
 /* 전송 버튼 스타일 */
@@ -220,19 +226,19 @@ body {
     border: none;
     margin-left: 10px;
     cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .chat-input button img {
     width: 24px;
     height: 24px;
-    transition: transform 0.2s;
 }
 
 .chat-input button:hover img {
     transform: scale(1.1);
 }
 
-/* 비활성화된 버튼 스타일 */
+/* 비활성화된 전송 버튼 스타일 */
 .send-button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -242,21 +248,52 @@ body {
     filter: grayscale(100%);
 }
 
+/* =======================================
+   로그인 및 관리자 페이지 스타일
+======================================= */
 
-#menu-button {
-    background: none;
-    border: none;
+/* 로그인 및 관리자 페이지 제목 마진 */
+.login-container h2, .admin-container h2 {
+    margin-bottom: 20px;
+}
+
+/* 로그인 및 관리자 페이지 입력 필드 스타일 */
+.login-container input, .admin-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box; /* 패딩 포함 */
+}
+
+/* 로그인 및 관리자 페이지 버튼 스타일 */
+.login-container button, .admin-container button {
+    width: 100%;
+    padding: 10px;
     cursor: pointer;
-    margin-right: auto; /* Align to the left */
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-#menu-button img {
-    width: 24px;
-    height: 24px;
+/* 로그인 폼 스타일 */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* 에러 및 성공 메시지 스타일 */
+.error {
+    color: red;
+}
 
-/* 사이드 메뉴 스타일 */
+.success {
+    color: green;
+}
+
+/* =======================================
+   사이드 메뉴 스타일
+======================================= */
+
+/* 사이드 메뉴 기본 스타일 */
 .side-menu {
     position: fixed;
     top: 0;
@@ -266,45 +303,18 @@ body {
     background-color: #fff;
     overflow-x: hidden;
     transition: left 0.3s;
-    z-index: 1000; /* 사이드 메뉴의 z-index를 오버레이보다 높게 설정 */
+    z-index: 1000; /* 오버레이보다 높게 설정 */
     box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+    box-sizing: border-box; /* 패딩 포함 */
 }
 
-/* 모바일에서 사이드 메뉴 전체 화면 차지 */
-@media screen and (max-width: 768px) {
-    .side-menu {
-        width: 40%;
-    }
-}
-
-/* 오버레이 수정 */
-#overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 999; /* 오버레이의 z-index를 사이드 메뉴보다 낮게 설정 */
-}
-
-#overlay.show {
-    display: block;
-}
-
-.side-menu.open {
-    z-index: 1000;
-    left: 0;
-}
-
-/* 사이드 메뉴 내용 중앙 정렬 */
+/* 사이드 메뉴 내용 정렬 */
 .side-menu-content {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 중앙 정렬 */
-    justify-content: center; /* 수직 중앙 정렬 */
-    height: 100%; /* 세로로 중앙 정렬을 위해 높이 설정 */
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    height: 100%; /* 세로 중앙 정렬을 위해 높이 설정 */
 }
 
 .side-menu-content p {
@@ -318,79 +328,52 @@ body {
     margin-top: 20px;
 }
 
-
-/* 모델 선택 버튼 스타일 */
-#model-select {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: #4a76a8;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+/* 사이드 메뉴 열기 클래스 */
+.side-menu.open {
+    left: 0;
 }
 
-#model-select option {
-    color: black;
-}
-
-#model-select:disabled {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
-}
-
-/* 배경색 통일 */
-body {
-    background-color: #e5ddd5;
-}
-
-.chat-container {
-    background-color: #e5ddd5;
-}
-
-/* 타이핑 인디케이터 */
-.typing-indicator {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    margin-left: 10px;
-}
-
-.typing-indicator .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.typing-indicator .dot {
-    display: inline-block; /* display 속성 추가 */
-    width: 8px;
-    height: 8px;
-    background-color: #333;
-    border-radius: 50%;
-    margin-right: 5px;
-    animation: blink 1s infinite;
-}
-
-.typing-indicator .dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-indicator .dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes blink {
-    0%, 80%, 100% {
-        opacity: 0;
-    }
-    40% {
-        opacity: 1;
+/* 모바일에서 사이드 메뉴 너비 조정 */
+@media screen and (max-width: 768px) {
+    .side-menu {
+        width: 40%;
     }
 }
 
-/* 기존 스타일은 유지하고, 아래에 추가합니다 */
+/* 오버레이 스타일 */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999; /* 사이드 메뉴보다 낮게 설정 */
+}
+
+#overlay.show {
+    display: block;
+}
+
+/* =======================================
+   반응형 디자인
+======================================= */
+
+/* 로그인 및 관리자 페이지 모바일 스타일 */
+@media screen and (max-width: 768px) {
+    .login-container, .admin-container {
+        margin: 10px;
+    }
+
+    .chat-container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        position: fixed;
+        overflow: hidden;
+    }
+}
 
 /* 예시 질문 박스 스타일 */
 .example-questions {
@@ -438,6 +421,17 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    max-height: 500px; /* 충분한 최대 높이 설정 */
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+/* 예시 질문 컨테이너가 접혔을 때 숨김 */
+#questions-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
 }
 
 @media screen and (max-width: 600px) {
@@ -447,6 +441,19 @@ body {
     }
 }
 
+/* =======================================
+   테이블 스타일
+======================================= */
+
+/* 테이블 컨테이너에 스크롤 추가 */
+@media screen and (max-width: 768px) {
+    .chat-container table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* 부드러운 스크롤 */
+    }
+}
 
 table {
     width: 100%;
@@ -464,31 +471,35 @@ th {
     background-color: #f0f0f0;
 }
 
+/* =======================================
+   로고 및 아이콘 스타일
+======================================= */
 
-.admin-container .button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #3CB371;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    margin-top: 10px;
+/* 메뉴 버튼 스타일 */
+#menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: auto; /* 왼쪽 정렬 */
 }
 
-.admin-container.button:hover {
-    background-color: #2e8b57;
+#menu-button img {
+    width: 24px;
+    height: 24px;
 }
 
-
+/* 메뉴 아이콘 색상 반전 */
 .menu-icon {
     filter: invert(100%);
 }
 
+/* GitHub 아이콘 크기 설정 */
 .github-icon {
     width: 50px;  /* 원하는 너비로 설정 */
     height: auto; /* 높이는 자동으로 설정하여 비율 유지 */
 }
 
+/* 채팅 로고 스타일 */
 .chat-logo {
     display: flex;
     flex-direction: column;
@@ -502,10 +513,88 @@ th {
 }
 
 .chat-logo img {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     max-width: 15%;
     height: auto;
     opacity: 0.3; /* 로고의 투명도 조절 */
+}
+
+/* =======================================
+   애니메이션
+======================================= */
+
+/* 말풍선 페이드인 애니메이션 */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* 타이핑 인디케이터 애니메이션 */
+@keyframes blink {
+    0%, 80%, 100% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.typing-indicator .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.typing-indicator .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #333;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: blink 1s infinite;
+}
+
+.typing-indicator .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* =======================================
+   모델 소개 박스 (필수)
+======================================= */
+
+/* 모델 소개 박스 */
+.model-intro {
+    background-color: #f9f9f9;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    color: #333;
+}
+
+/* =======================================
+   추가된 클래스
+======================================= */
+
+/* 예시 질문 컨테이너가 접혔을 때 숨김 */
+.collapsed {
+    display: none;
 }

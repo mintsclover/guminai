@@ -143,8 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 예시 질문을 토글하는 함수
     function toggleQuestions() {
         questionsContainer.classList.toggle('collapsed');
-        const isCollapsed = questionsContainer.classList.contains('collapsed');
-        toggleButton.querySelector('img').src = isCollapsed ? '/static/images/arrow_down_icon.png' : '/static/images/arrow_up_icon.png';
+        toggleButton.classList.toggle('open'); // 'open' 클래스 토글
+        // 이미지 소스 변경 코드 제거
     }
 
     // 사이드 메뉴 열기 함수
