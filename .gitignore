@@ -20,6 +20,8 @@ chat_history.db
 /과거모델
 .wsgi
 .db
+docstore.pkl
+vector_store.index
 
 ### Flask ###
 instance/*
