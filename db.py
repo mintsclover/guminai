@@ -3,6 +3,7 @@ import sqlite3
 import logging
 from flask import g
 from config import config
+from datetime import datetime
 
 def get_db():
     """

@@ -1,5 +1,6 @@
 # utils/context.py
 import math
+import faiss
 import logging
 from config import ALPHA, TOP_K, MAX_TOTAL_LENGTH
 from utils.text_utils import truncate_text

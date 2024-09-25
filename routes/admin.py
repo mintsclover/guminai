@@ -1,5 +1,5 @@
 # routes/admin.py
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, current_app
 import yaml
 import logging
 from config import config
@@ -27,6 +27,8 @@ def admin_page():
         try:
             with open('config.yaml', 'w', encoding='utf-8') as f:
                 yaml.dump(new_config, f, allow_unicode=True)
+            # 업데이트된 설정을 현재 애플리케이션 설정에 반영
+            current_app.config.update(new_config)
             return render_template('admin.html', success='설정이 업데이트되었습니다.', config=new_config)
         except Exception as e:
             logging.error(f"설정 파일 업데이트 중 오류 발생: {e}")

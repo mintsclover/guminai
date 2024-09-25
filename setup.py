@@ -3,7 +3,6 @@ import os
 import shutil
 import json
 import logging
-from config import CHAT_PASSWORD, ADMIN_PASSWORD
 
 def setup_files():
     templates = {

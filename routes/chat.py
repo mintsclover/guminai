@@ -1,8 +1,7 @@
 # routes/chat.py
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, current_app, redirect, url_for  # 'redirect' 추가
 import random
 import logging
-from config import model_presets, all_example_questions
 from models.vector_store_manager import VectorStoreManager
 from models.completion_executor import CompletionExecutor
 from utils.conversation import manage_conversation_history
@@ -21,9 +20,11 @@ def chat_page():
     
     # 예시 질문 랜덤 선택
     num_questions = 3  # 표시할 질문의 수
+    all_example_questions = current_app.config.get('ALL_EXAMPLE_QUESTIONS', [])
     example_questions = random.sample(all_example_questions, num_questions) if len(all_example_questions) >= num_questions else all_example_questions
     
     # 모델 정보 전달
+    model_presets = current_app.config.get('MODEL_PRESETS', {})
     models = {
         model_key: {
             'display_name': model_info.get('display_name', model_key),
@@ -48,12 +49,17 @@ def chat_api_endpoint():
         return jsonify({'answer': test_response, 'reset_message': None})
 
     selected_model = data.get('model', 'model1')
+    model_presets = current_app.config.get('MODEL_PRESETS', {})
     model_preset = model_presets.get(selected_model, model_presets.get('model1', {}))
 
     if not model_preset:
         return jsonify({'error': 'Model preset not found'}), 400
 
     try:
+        # 클로바 실행기와 벡터 스토어 관리자 가져오기
+        completion_executor = current_app.config.get('COMPLETION_EXECUTOR')
+        vector_store_manager = current_app.config.get('VECTOR_STORE_MANAGER')
+
         # 컨텍스트 생성
         context = generate_context(question, vector_store_manager)
 
@@ -64,7 +70,7 @@ def chat_api_endpoint():
         messages = construct_messages(model_preset, conversation_history, context)
 
         # 모델에 요청 보내기
-        response = get_model_response(model_preset, messages)
+        response = get_model_response(model_preset, messages, completion_executor)
 
         # 대화 내역에 봇의 응답 추가
         conversation_history.append({'role': 'assistant', 'content': response})
