@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from vector_store_manager import VectorStoreManager  # 클래스 임포트
+from models.vector_store_manager import VectorStoreManager  # 클래스 임포트
 
 # 시뮬레이션을 위한 코드 정의
 class DocumentSimulator:
