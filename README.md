@@ -96,6 +96,10 @@ cd guminai
 ```batch
 setup.bat
 ```
+만약 작동하지 않는 경우, (powershell)
+```
+.\setup.bat
+```
 
 **리눅스/맥**
 ```bash
