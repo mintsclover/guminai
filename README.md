@@ -4,7 +4,7 @@
 
 ### 마크다운 문서 벡터화와 유사도 기반 검색을 통해 답변을 제공하는 Flask 웹 애플리케이션 챗봇
 
-<img src="./docs/screenshot/chat_interface.png" width="500" height="auto"/>
+<img src="./static/images/favicon.png" width="100" height="auto"/>
 
 </div>
 
@@ -16,11 +16,10 @@
 - [환경 설정](#-환경-설정)
 - [기여](#-기여)
 - [라이선스](#-라이선스)
-- [연락처](#-연락처)
 
 ## 📖 개요
 
-GuminAI는 다양한 마크다운(Markdown) 문서를 기반으로 사용자의 질문에 정확한 답변을 제공하는 AI 챗봇입니다. 문서를 벡터화하여 유사한 정보를 빠르게 검색하고, Flask를 이용해 손쉽게 웹 애플리케이션으로 배포할 수 있습니다. 초기 설정 과정도 간편하게 구성되어 있어, 별도의 복잡한 절차 없이 바로 서비스를 시작할 수 있습니다.
+GuminAI는 다양한 마크다운(Markdown) 문서를 기반으로 사용자의 질문에 정확한 답변을 제공하는 AI 챗봇입니다. 문서를 벡터화하여 유사한 정보를 빠르게 검색하고, Flask를 이용해 손쉽게 웹 애플리케이션으로 배포할 수 있습니다.
 
 - **개발 기간**: 2024년 4월 ~ 9월
 - **주요 목적**: 문서 기반의 지능형 대화 시스템 구현
@@ -46,7 +45,7 @@ GuminAI는 다양한 마크다운(Markdown) 문서를 기반으로 사용자의 
 
 ## 🏗 프로젝트 구조
 
-GuminAI는 사용자 인터페이스부터 백엔드 서버, AI 응답 생성, 데이터 저장까지 체계적으로 구성되어 있습니다. Flask 서버가 사용자 요청을 처리하고, FAISS를 이용해 벡터화된 문서에서 유사한 정보를 검색하여 Naver Clova API를 통해 지능형 응답을 생성합니다. 모든 대화 내역은 SQLite 데이터베이스에 저장되며, 관리자 페이지를 통해 쉽게 관리할 수 있습니다.
+GuminAI는 사용자 인터페이스부터 백엔드 서버, AI 응답 생성, 데이터 저장까지 체계적으로 구성되어 있습니다. Flask 서버가 사용자 요청을 처리하고, FAISS를 이용해 벡터화된 문서에서 유사한 정보를 검색하여 Naver Clova API를 통해 지능형 응답을 생성합니다.
 
 ### 기술 스택
 - **Backend**: [Python 3.12.5](https://www.python.org/downloads/release/python-3125/)
@@ -87,7 +86,7 @@ graph TD
 
 #### 1. 저장소 클론
 ```bash
-git clone https://github.com/your-username/guminai.git
+git clone https://github.com/koremin/guminai.git
 cd guminai
 ```
 
@@ -183,9 +182,7 @@ files: None
 folder_path: wiki
 
 # 로그 레벨 설정 (CRITICAL, ERROR, WARNING, INFO, DEBUG)
-log_level: CRITICAL
-
-
+log_level: INFO
 
 # 생성할 컨텍스트의 최대 총 길이 (문자 수)
 max_total_length: 1600
@@ -212,10 +209,6 @@ alpha: 1
 
 <div align="center">
 
-[![GitHub License](https://img.shields.io/github/license/your-username/guminai?style=flat-square)](LICENSE)
+[![GitHub License](https://img.shields.io/github/license/koremin/guminai?style=flat-square)](LICENSE)
 
 </div>
-
-## 📢 연락처
-- **이메일**: your-email@example.com
-- **GitHub**: [your-username](https://github.com/your-username)
