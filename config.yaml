@@ -2,7 +2,7 @@ alpha: 1
 embedding_model_name: jhgan/ko-sroberta-multitask
 files: None
 folder_path: wiki
-log_level: CRITICAL
+log_level: INFO
 max_total_length: 1600
 top_k: 5
 vector_store_path: vector_store.index
