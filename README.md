@@ -45,7 +45,7 @@ GuminAI는 다양한 마크다운(Markdown) 문서를 기반으로 사용자의 
 
 ## 🏗 프로젝트 구조
 
-GuminAI는 사용자 인터페이스부터 백엔드 서버, AI 응답 생성, 데이터 저장까지 체계적으로 구성되어 있습니다. Flask 서버가 사용자 요청을 처리하고, FAISS를 이용해 벡터화된 문서에서 유사한 정보를 검색하여 Naver Clova API를 통해 지능형 응답을 생성합니다.
+Flask 서버가 사용자 요청을 처리하면, GuminAI는 FAISS를 이용해 벡터화된 문서에서 유사한 정보를 검색하고, Naver Clova API를 통해 지능형 응답을 생성합니다.
 
 ### 기술 스택
 - **Backend**: [Python 3.12.5](https://www.python.org/downloads/release/python-3125/)
@@ -78,9 +78,8 @@ graph TD
 ## 🚀 설치 및 실행
 
 ### 필수 요구사항
-- Python 3.12.5 이상
+- Python 3.12.5 이상 (이하 테스트 x)
 - Git
-- [FAISS](https://github.com/facebookresearch/faiss) 설치 (필요 시)
 
 ### 설치 과정
 
