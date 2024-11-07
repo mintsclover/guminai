@@ -1,5 +1,6 @@
 # app.py
 from flask import Flask
+from flask_cors import CORS
 import logging
 from config import LOG_LEVEL, SECRET_KEY, CLOVA_HOST, CLOVA_API_KEY, CLOVA_PRIMARY_KEY, CLOVA_REQUEST_ID
 from setup import initialize
@@ -15,6 +16,7 @@ all_example_questions, model_presets = initialize()
 
 # Flask 애플리케이션 설정
 app = Flask(__name__)
+CORS(app)
 app.secret_key = SECRET_KEY
 
 # 설정을 app.config에 저장

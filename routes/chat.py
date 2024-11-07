@@ -5,7 +5,7 @@ import logging
 from models.vector_store_manager import VectorStoreManager
 from models.completion_executor import CompletionExecutor
 from utils.conversation import manage_conversation_history
-from utils.context import generate_context
+from utils.context import generate_context, generate_context2
 from db import save_chat_history
 
 chat_bp = Blueprint('chat', __name__)
@@ -90,6 +90,22 @@ def chat_api_endpoint():
     except Exception as e:
         logging.error(f"채팅 처리 중 오류 발생: {e}")
         return jsonify({'error': '채팅 처리 중 오류가 발생했습니다.'}), 500
+    
+@chat_bp.route('/map_data', methods=['POST'])
+def map_data():
+    # 요청에서 question 가져오기
+    data = request.get_json()
+    question = data.get('question')
+
+    # VECTOR_STORE_MANAGER 가져오기
+    vector_store_manager = current_app.config.get('VECTOR_STORE_MANAGER')
+
+    # 질문을 사용하여 context 생성
+    context = generate_context2(question, vector_store_manager)
+
+    # 결과 반환
+    result = {"message": context}
+    return jsonify(result)
 
 def construct_messages(model_preset, conversation_history, context):
     """
